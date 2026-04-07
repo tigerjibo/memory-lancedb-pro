@@ -854,10 +854,7 @@
           }
         }
       }
-    },
-    "required": [
-      "embedding"
-    ]
+    }
   },
   "uiHints": {
     "embedding.apiKey": {
