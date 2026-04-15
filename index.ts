@@ -265,6 +265,11 @@ function getDefaultWorkspaceDir(): string {
   return join(home, ".openclaw", "workspace");
 }
 
+function getDefaultMdMirrorDir(): string {
+  const home = homedir();
+  return join(home, ".openclaw", "memory", "md-mirror");
+}
+
 function resolveWorkspaceDirFromContext(context: Record<string, unknown> | undefined): string {
   const runtimePath = typeof context?.workspaceDir === "string" ? context.workspaceDir.trim() : "";
   return runtimePath || getDefaultWorkspaceDir();
@@ -1546,7 +1551,9 @@ function createMdMirrorWriter(
 ): MdMirrorWriter | null {
   if (config.mdMirror?.enabled !== true) return null;
 
-  const fallbackDir = api.resolvePath(config.mdMirror.dir || "memory-md");
+  const fallbackDir = api.resolvePath(
+    config.mdMirror.dir ?? getDefaultMdMirrorDir(),
+  );
   const workspaceMap = resolveAgentWorkspaceMap(api);
 
   if (Object.keys(workspaceMap).length > 0) {
@@ -4159,6 +4166,8 @@ export function parsePluginConfig(value: unknown): PluginConfig {
         : undefined,
   };
 }
+
+export { getDefaultMdMirrorDir };
 
 /**
  * Resets the registration state — primarily intended for use in tests that need
