@@ -440,7 +440,9 @@ describe("import-markdown CLI", () => {
         });
         // Should have imported the real file (1 entry from "- Real file entry")
         assert.strictEqual(imported, 1, "should import the real .md file");
-        assert.strictEqual(skipped, 1, "should skip exactly 1 (.md directory entry)");
+        // skipped === 0: f.isFile() silently filters .md directories during mdFiles collection.
+        // This is correct — the directory doesn't cause EISDIR or increment skipped.
+        assert.strictEqual(skipped, 0, "directory silently filtered by f.isFile() — not counted as skipped");
       } catch (err) {
         threw = true;
         throw new Error(`Import aborted on .md directory: ${err}`);
@@ -474,7 +476,9 @@ describe("import-markdown CLI", () => {
           workspaceGlob: "flatmd-dir-test",
         });
         assert.strictEqual(imported, 1, "should import the real .md file");
-        assert.strictEqual(skipped, 1, "should skip exactly 1 (.md directory entry)");
+        // skipped === 0: f.isFile() in flatMemoryDir scan (cli.ts:639) silently filters
+        // .md directories during collection — no EISDIR error, no skipped++ increment.
+        assert.strictEqual(skipped, 0, "directory silently filtered by f.isFile() — not counted as skipped");
       } catch (err) {
         threw = true;
         throw new Error(`Import aborted on .md directory in flatMemoryDir: ${err}`);
